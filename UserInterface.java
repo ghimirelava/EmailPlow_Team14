@@ -33,6 +33,42 @@ public class UserInterface {
         return Map;
     }
 
+    public Map<String, List<String>> categorizeEmails(Map<String, List<String>> emailMap) {
+        EmailCategorizer categorizer = new EmailCategorizer();
+        Map<String, List<String>> categorizedEmails = new HashMap<>();
+        Map<String, List<String>> emailsByCategory = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : emailMap.entrySet()) {
+            List<String> emails = entry.getValue();
+
+            for (String email : emails) {
+                String[] parts = email.split(": ");
+                String emailAddress = parts[0];
+                String subject = parts[1];
+                String emailCategory = categorizer.categorizeEmail(subject);
+                if (emailCategory.equals("Other")) {
+                    emailCategory = categorizer.categorizeEmail(emailAddress);
+                }
+
+                if (!emailsByCategory.containsKey(emailCategory)) {
+                    emailsByCategory.put(emailCategory, new ArrayList<>());
+                }
+                emailsByCategory.get(emailCategory).add(emailAddress + ": " + subject);
+            }
+        }
+
+
+        // Loop through the categories and add the emails to the categorizedEmails map
+        for (Map.Entry<String, List<String>> entry : emailsByCategory.entrySet()) {
+            String category = entry.getKey();
+            List<String> emails = entry.getValue();
+
+            categorizedEmails.put(category, emails);
+        }
+
+
+        return categorizedEmails;
+    }
+
 
     public static void printCategorize(Map<String, List<String>> Map) {
         for (String category : Map.keySet()) {
@@ -60,15 +96,15 @@ public class UserInterface {
                 System.out.println(emailSubject);
             }
         }
+        System.out.println();
     }
 
     public static Map<String, List<String>> deleteEmailAndKeywords(Map<String, List<String>> map, String emailAddress, String keyword) {
         Map<String, List<String>> updatedMap = new HashMap<>();
-        List<String> emailSubjectList = new ArrayList<>();
         for (String category : map.keySet()) {
+            List<String> emailSubjectList = new ArrayList<>();
             for (String emailSubject : map.get(category)) {
                 String email = emailSubject.split(":")[0].trim();
-                // Delete by email
                 if (emailAddress != null && email.equals(emailAddress)) {
                     continue;
                 }
@@ -141,8 +177,14 @@ public class UserInterface {
                 } else if (input.equals("2")) {
 
                     System.out.println("Sorting into categories... ");
+                    if (Map.equals(foo.categorize(filename))) {
+                        foo.printCategorize(Map);
+                        System.out.println(Map.size());
+                    } else {
+                        Map = foo.categorizeEmails(Map);
 
-                    foo.printCategorize(Map);
+                        foo.printCategorize(Map);
+                    }
                     // calls function that searches and sorts all emails into categories thats user inputed & input
 
 
