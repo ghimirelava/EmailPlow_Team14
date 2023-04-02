@@ -3,7 +3,7 @@ import java.util.Map;
 
 public class EmailPlow {
 
-	private static final String Urgent_Category = "Urgent";
+    private static final String Urgent_Category = "Urgent";
     private static final String Shopping_Category = "Shopping";
     private static final String Subscriptions_Category = "Subscriptions";
     private static final String Health_Category = "Health";
@@ -37,9 +37,9 @@ public class EmailPlow {
         categories.put(Entertainment_Category, Entertainment_Values);
         categories.put(Social_Category, Social_Values);
         //categories.put(Urgent_Category, Urgent_Values);
-        
+
     }
-    
+
 
     public String categorizeEmail(String subject) {
         for (Map.Entry<String, String[]> entry : categories.entrySet()) {
@@ -54,5 +54,5 @@ public class EmailPlow {
         return "Other";
     }
 
-    
+
 }
