@@ -40,8 +40,7 @@ public class UserInterface{
             System.out.println();
         }
 	}
-	
-	public void categorizeByInput(String filename, String input) throws IOException {
+	public void delete(String filename, String key, String type) throws IOException {
 		EmailCategorizer categorizer = new EmailCategorizer();
         BufferedReader reader = new BufferedReader(new FileReader(filename));
         reader.readLine();
@@ -62,16 +61,39 @@ public class UserInterface{
             Map.put(category, emailList);
         }
         reader.close();
+
+        Map = deleteEmailAndKeywords(Map,key,null);
         
         // Printing
         for (String category : Map.keySet()) {
-            System.out.println(category + ":");
-            for (String emailSubject : Map.get(category)) {
+            //System.out.println(category + ":");
+            for (String emailSubject : Map.get(category))
+            {
                 System.out.println(emailSubject);
             }
             System.out.println();
         }
 	}
+	
+	public static Map<String, List<String>> deleteEmailAndKeywords(Map<String, List<String>> map, String Email, String keyword) {
+        Map<String, List<String>> updatedMap = new HashMap<>();
+        List<String> emailSubjectList = new ArrayList<>();
+        for (String category : map.keySet()) {
+            for (String emailSubject : map.get(category)) {
+                String email = emailSubject.split(":")[0].trim();
+                // Delete by email
+                if(Email != null && email.equals(Email)){
+                    continue;
+                }
+                    if(keyword != null && emailSubject.toLowerCase().contains(keyword.toLowerCase())){
+                      continue;
+                    }
+                emailSubjectList.add(emailSubject);
+            }
+            updatedMap.put(category, emailSubjectList);
+        }
+        return updatedMap;
+    }
 	
 	
 	
@@ -81,8 +103,10 @@ public class UserInterface{
 		
 		UserInterface foo = new UserInterface();
 			
-		String filename = "inbox.csv";
-
+		String filename = "Inbox.csv";
+		
+		String type1 = "email";
+		String type2 = "keywords";
 		
 		System.out.println("Welcome to the Email Plow!");
 		
@@ -105,17 +129,17 @@ public class UserInterface{
 			else {
 	
 				if (input.equals("1")) {
-		            System.out.println("Enter 1 to delete by KEYWORD");
+		            System.out.println("Enter 1 to delete by KEYWORD or EMAIL ADDRESS");
 		            System.out.println("      2 to delete by EMAIL ADDRESS");
 		            System.out.println("      3 to delete by CATEGORY");
 		            input = sc.nextLine();
 		            
 		            if (input.equals("1")) {
-		            	System.out.println("Enter keywords: ");
+		            	System.out.println("Enter keywords/ email address: ");
 		            	input = sc.nextLine();
 		            	
 		            	// calls function with filename and input --> for each input compares it with the elems in the file and deletes them
-		            	
+		            	foo.delete(filename, input, type1);
 		            	//outputs previous count, number of emails deleted, current count and save new inbox in "newInbox.txt"
 		            	
 		            }else if (input.equals("2")) {
@@ -123,8 +147,8 @@ public class UserInterface{
 		            	input = sc.nextLine();
 		            	
 		            	// calls function with filename and input --> for each input compares it with the elems in the file and deletes them
-		            	
-		            	//outputs previous count, number of emails deleted, current count and save new inbox in "newInbox.txt"
+		            	foo.delete(filename, input, type2);
+
 		            	
 		            	
 		            }else {
@@ -133,30 +157,11 @@ public class UserInterface{
 					
 				}
 				else if(input.equals("2")) {
-					System.out.println("Enter 1 to customize sorting");
-		            System.out.println("      2 to sort with default settings");
-		            input = sc.nextLine();
-		            
-		            if (input.equals("1")) {
-		            	
-		            	System.out.println("Sorting categories: ");
-		            	System.out.println("(1) Shopping\n(2) Subscriptions\n(3) Health\n(4) Work\n(5) School\n(6) Entertainment\n(7) Social\n(8) Urgent\n(9) Finances\n(10) Promotions\n");
-		            	System.out.println("Enter categories to sort by: "); // maybe we should give a list??
-		            	input = sc.nextLine();
-		            	
-		            	// calls function that searches and sorts all emails into categories thats user inputed
+
+		            	System.out.println("Sorting into categories... ");
+
+		            	// calls function that searches and sorts all emails into categories thats user inputed & input
 		            	foo.categorize(filename);
-		            	// print out categorized emails
-		            	
-		            }else if (input.equals("2")) {
-		            	
-		            	// calls function that searches and sorts all emails into default categories
-		            	foo.categorizeByInput(filename, input);
-		            	// print out categorized emails
-		            	
-		            }else {
-		            	System.out.println("Invalid input. Try again.");
-		            }
 					
 				}
 				else {
